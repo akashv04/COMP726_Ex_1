@@ -1,0 +1,60 @@
+3. Calculate the hashpower of your PC and estimate how long it would take to find a block in the present bitcoin networkLinks to an external site.
+
+First i will calculate the hashpower of my computer. I use a 2020 M1 Macbook air, which has a hashpower of 606,195 hashes per second
+
+The hashpower was calculated by running a simple test where the script continuously generated hashes for a fixed duration (in this case, 10 seconds). 
+The number of hashes produced in that time was then divided by the elapsed time to determine the hash rate (hashes per second).
+
+Steps to Calculate Hashpower:
+Duration of Test: The test was set to run for 10 seconds.
+Hash Function: The SHA-256 hashing function was applied repeatedly on the same data (simulating mining).
+Counting Hashes: A counter (nonce) was incremented for each hash operation.
+Calculate Hashpower: After the test period, the total number of hashes was divided by the elapsed time to determine the number of hashes per second (hashpower).
+
+Script to calculate hashpower:
+import time
+import hashlib
+
+def hash_block(data, nonce):
+    """Hashes the block with the nonce using SHA-256."""
+    block_data = str(data) + str(nonce)
+    return hashlib.sha256(block_data.encode('utf-8')).hexdigest()
+
+def calculate_hashpower(test_duration=10):
+    """Calculate how many hashes per second (hashpower) the system can perform."""
+    nonce = 0
+    start_time = time.time()
+    end_time = start_time + test_duration
+    data = "Hashpower Test"
+    
+    while time.time() < end_time:
+        hash_block(data, nonce)
+        nonce += 1
+    
+    elapsed_time = time.time() - start_time
+    return nonce / elapsed_time  # Hashes per second
+
+# Calculate the hashpower over a 10-second period
+hashpower = calculate_hashpower()
+
+The output was - 606,195 hashes per second
+
+To estimate how long it would take for my pc to find a block in the current Bitcoin network, we can use the current average hashrate of the Bitcoin network, 
+which is 629.87 exahashes per second (Eh/s), and compare it to my PC's hashpower of approximately 606,195 hashes per second (H/s).
+
+PC hashpower: 606,195 H/s
+Bitcoin network hashrate: 629.87 Eh/s = 629.87 × 10¹⁸ H/s
+Bitcoin's block time: Every 10 minutes (600 seconds), one block is found.
+
+Step-by-Step Calculation:
+1. Proportion of hashpower relative to the network:
+
+Proportion =  Hashpower / Bitcoin network hashrate = 606,195 /629.87×10^18
+
+2. Estimate the time to find a block: Since one block is found every 600 seconds by the whole network, 
+the time for my PC to find a block is inversely proportional to my hashpower relative to the network.
+
+Time to find a block = 600 seconds/Proportion
+
+It would take approximately 19.76 billion years for my 2020 M1 MacBook Air to find a single block in the current Bitcoin network, 
+given the current network hashrate of 629.87 exahashes per second and my MacBook's hashpower of 606,195 hashes per second.
