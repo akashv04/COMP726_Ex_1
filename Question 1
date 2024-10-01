@@ -1,0 +1,75 @@
+(30 marks) Mining difficulty is not only represented by leading zeroes (powers of 16) but by a value (hex number) that is recalculated every 2016 blocks (in Bitcoin).
+Write a script demonstrating simplified proof-of-work, using 
+'if hash < target: block_found = True'
+and run your simplified proof-of-work in two different difficulties.
+
+Mining Difficulty: Bitcoin's mining difficulty is adjusted every 2016 blocks to maintain an average block generation time of 10 minutes. 
+Difficulty can be represented by a target value, which decreases as difficulty increases. 
+In simplified terms, the proof-of-work is about finding a hash that is lower than the target.
+
+Proof-of-Work Simulation:
+I will use the SHA-256 hash function to simulate mining.
+The script will loop until it finds a hash that meets the target condition: if hash < target: block_found = True.
+Difficulty will be simulated by two different target values, one lower (higher difficulty) and one higher (lower difficulty).
+
+import hashlib
+import random
+
+def hash_block(data, nonce):
+    """Hashes the block with the nonce using SHA-256."""
+    block_data = str(data) + str(nonce)
+    return hashlib.sha256(block_data.encode('utf-8')).hexdigest()
+
+def mine_block(data, target):
+    """Tries to mine a block by finding a valid nonce such that the hash < target."""
+    nonce = 0
+    while True:
+        block_hash = hash_block(data, nonce)
+        if block_hash < target:
+            return nonce, block_hash
+        nonce += 1
+
+def run_proof_of_work(data, target_hex, difficulty_name):
+    print(f"Starting mining at {difficulty_name} difficulty with target: {target_hex}")
+    nonce, block_hash = mine_block(data, target_hex)
+    print(f"Block mined with nonce: {nonce}")
+    print(f"Block hash: {block_hash}")
+    print("-------------------------------------------------------")
+
+# Simulating two different difficulty levels
+# Lower target value means higher difficulty
+
+# Difficulty 1 (Low difficulty - high target)
+target_difficulty_1 = '0x0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+# Difficulty 2 (High difficulty - low target)
+target_difficulty_2 = '0x00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+
+data = "Simplified Proof of Work Demo"
+
+# Run proof of work for low difficulty
+run_proof_of_work(data, target_difficulty_1, "Low")
+
+# Run proof of work for high difficulty
+run_proof_of_work(data, target_difficulty_2, "High")
+
+Explanation of the Code:
+  hash_block Function: Combines the data (block information) with a nonce (a changing number) and returns the SHA-256 hash of this combination.
+  mine_block Function: Continuously increments the nonce value until the hash of the block is less than the given target (simulating the proof-of-work process).
+  run_proof_of_work Function: Runs the proof-of-work algorithm and prints the results for each difficulty.
+Difficulty Simulation:
+  target_difficulty_1: A higher target represents lower mining difficulty.
+  target_difficulty_2: A lower target represents higher mining difficulty.
+Running the Script:
+The script will first try to find a valid nonce for a low difficulty level (high target).
+Then it will increase the difficulty by lowering the target and attempt to find a valid nonce under a higher difficulty.
+
+Output Example:
+Starting mining at Low difficulty with target: 0x0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+Block mined with nonce: 10456
+Block hash: 0x0a12345678abcdef...
+-------------------------------------------------------
+Starting mining at High difficulty with target: 0x00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+Block mined with nonce: 98765432
+Block hash: 0x00000345678bcdef...
+-------------------------------------------------------
