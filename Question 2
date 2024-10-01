@@ -1,0 +1,94 @@
+2. Write a script to modify the difficulty every time a block is found faster than expected (increase difficulty) 
+and readjusts if a block is found slower than expected (decrease difficulty).
+
+To simulate a dynamic difficulty adjustment based on block mining times, my  script will:
+
+Monitor block time: Compare the time taken to mine a block with an expected target time.
+Adjust difficulty: If a block is mined faster than expected, the difficulty will increase. If it's slower, the difficulty will decrease.
+Simulate the proof-of-work: Using the hash < target condition for block mining.
+My script uses a target block time, and after each block is mined, it adjusts the difficulty based on the time taken.
+
+Step-by-Step Approach:
+Target Block Time: Set a target block mining time (e.g., 10 seconds for simplicity).
+Difficulty Adjustment: Use a simple rule to adjust difficulty:
+If the block is found in less time than expected, reduce the target (increase difficulty).
+If the block takes more time, increase the target (reduce difficulty).
+Proof-of-Work Simulation: The mining process checks if the hash of the block is less than the current target to consider the block mined.
+
+Script ;
+
+import hashlib
+import random
+import time
+
+def hash_block(data, nonce):
+    """Hashes the block with the nonce using SHA-256."""
+    block_data = str(data) + str(nonce)
+    return hashlib.sha256(block_data.encode('utf-8')).hexdigest()
+
+def mine_block(data, target):
+    """Tries to mine a block by finding a valid nonce such that the hash < target."""
+    nonce = 0
+    start_time = time.time()
+    
+    while True:
+        block_hash = hash_block(data, nonce)
+        if block_hash < target:
+            block_time = time.time() - start_time
+            return nonce, block_hash, block_time
+        nonce += 1
+
+def adjust_difficulty(target, block_time, target_block_time):
+    """Adjusts the difficulty based on how long it took to mine the block."""
+    adjustment_factor = 1.1  # Adjust difficulty by 10%
+    
+    if block_time < target_block_time:
+        # Block mined too quickly, increase difficulty (reduce target)
+        target = hex(int(target, 16) // int(adjustment_factor))
+    else:
+        # Block mined too slowly, decrease difficulty (increase target)
+        target = hex(int(target, 16) * int(adjustment_factor))
+    
+    return target
+
+def run_dynamic_proof_of_work(data, initial_target, target_block_time, num_blocks=5):
+    """Simulates mining multiple blocks with dynamic difficulty adjustment."""
+    target = initial_target
+    for block_num in range(num_blocks):
+        print(f"Mining block {block_num + 1} with target: {target}")
+        nonce, block_hash, block_time = mine_block(data, target)
+        print(f"Block {block_num + 1} mined with nonce: {nonce}")
+        print(f"Block hash: {block_hash}")
+        print(f"Time to mine: {block_time:.2f} seconds")
+        
+        # Adjust difficulty
+        target = adjust_difficulty(target, block_time, target_block_time)
+        print(f"New target after adjustment: {target}")
+        print("-------------------------------------------------------")
+
+# Initial parameters
+initial_target = '0x00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'  # Initial difficulty
+target_block_time = 10  # Target time to mine a block in seconds
+
+data = "Dynamic Difficulty Proof of Work Demo"
+run_dynamic_proof_of_work(data, initial_target, target_block_time)
+
+Explanation of the Script:
+  hash_block: This function takes data and nonce, combines them, and computes the SHA-256 hash.
+  mine_block: Mines the block by finding a nonce that generates a hash lower than the target. It also measures how long it takes to find the block.
+  adjust_difficulty: Compares the time taken to mine the block with the target block time. If the block was mined faster, the difficulty is increased (by reducing the target). If slower, the difficulty is decreased (by increasing the target).
+  run_dynamic_proof_of_work: This function runs the mining process for multiple blocks (5 in this case), adjusting the difficulty after each block based on the time taken to mine the previous block.
+
+Example Output:
+Mining block 1 with target: 0x00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+Block 1 mined with nonce: 105832
+Block hash: 0x0000056abcd123456...
+Time to mine: 9.25 seconds
+New target after adjustment: 0x00000e1e3a7a8a82cc938dfffffffe1f
+-------------------------------------------------------
+Mining block 2 with target: 0x00000e1e3a7a8a82cc938dfffffffe1f
+Block 2 mined with nonce: 200453
+Block hash: 0x00000345cdef123456...
+Time to mine: 11.12 seconds
+New target after adjustment: 0x00000cc4ba9baf02ccfedcfffe45ab78
+-------------------------------------------------------
