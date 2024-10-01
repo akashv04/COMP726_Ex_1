@@ -15,7 +15,7 @@ If the block is found in less time than expected, reduce the target (increase di
 If the block takes more time, increase the target (reduce difficulty).
 Proof-of-Work Simulation: The mining process checks if the hash of the block is less than the current target to consider the block mined.
 
-Script ;
+Script :
 
 import hashlib
 import random
